@@ -1,10 +1,17 @@
 const availableLangs = ['de', 'en', 'es', 'fr', 'ja', 'pt']
 
-export default function langProvider() {
-  const systemLang = Intl.DateTimeFormat().resolvedOptions().locale;
-  if (availableLangs.includes(systemLang)) {
-    return systemLang;
+export default async function langProvider(systemLang = 'en') {
+  let selectedLang = systemLang;
+
+  const searchParams = new URLSearchParams(window.location.search);
+
+  if (searchParams.has('lang')) {
+    const urlLang = searchParams.get('lang');
+    if (availableLangs.includes(urlLang)) {
+      selectedLang = urlLang;
+    }
   }
 
-  return 'en';
+  const data = await import(`../json/${selectedLang}.json`)
+  return data;
 }
